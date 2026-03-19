@@ -2,6 +2,8 @@
 #include <avr/sleep.h>
 #include <avr/power.h>
 
+// Arduino Nano, ATmega328P
+
 #define NEW_MP3LIB 1
 #ifdef NEW_MP3LIB
   #include <DFPlayerMini_Fast.h>
@@ -26,6 +28,7 @@ AltSoftSerial altSerial;
 #define PHONE_BTN     5
 #define LED_EXTERN    4
 #define RING_TIMEOUT  (30*1000)
+#define DELTA_TIMEOUT  (20*1000)
 
 #ifdef NEW_MP3LIB
   DFPlayerMini_Fast myMP3;
@@ -96,7 +99,7 @@ void setup()
 
   stopTheMusic();
 
-  lastRing = lastPlaying = millis();
+  lastRing = lastPlaying = millis() - DELTA_TIMEOUT;
   //ringTheBell();
  
   digitalWrite(LED_EXTERN, HIGH);
@@ -105,6 +108,8 @@ void setup()
   oldPhone = digitalRead(PHONE_BTN);
   oldBtnRing = digitalRead(BUTTON_RING);
   oldBtnMP3 = digitalRead(BUTTON_MP3);
+
+  ringTheBell();
 }
 
 // the loop function runs over and over again forever
