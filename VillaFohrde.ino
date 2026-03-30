@@ -4,7 +4,7 @@
 
 // Arduino Nano, ATmega328P
 
-#define NEW_MP3LIB 1
+//#define NEW_MP3LIB 1
 #ifdef NEW_MP3LIB
   #include <DFPlayerMini_Fast.h>
 #else
@@ -27,7 +27,7 @@ AltSoftSerial altSerial;
 #define BUTTON_RING   6
 #define PHONE_BTN     5
 #define LED_EXTERN    4
-#define RING_TIMEOUT  (30*1000)
+#define RING_TIMEOUT  (20*1000)
 
 #ifdef NEW_MP3LIB
   DFPlayerMini_Fast myMP3;
@@ -101,7 +101,7 @@ void setup()
   lastRing = lastPlaying = millis();
   //ringTheBell();
  
-  digitalWrite(LED_EXTERN, HIGH);
+//  digitalWrite(LED_EXTERN, HIGH);
 
   oldPIR = digitalRead(INPUT_PIR);
   oldPhone = digitalRead(PHONE_BTN);
@@ -116,6 +116,10 @@ void loop()
 {
   //digitalWrite(LED_EXTERN, digitalRead(INPUT_PIR));
   //return;
+
+  //Serial.print("Radar: ");
+  //Serial.println(digitalRead(INPUT_PIR));
+  digitalWrite(LED_EXTERN, digitalRead(INPUT_PIR)); // monitor sensor
 
   unsigned long now = millis();
 #ifdef NEW_MP3LIB
@@ -137,11 +141,10 @@ void loop()
       // aber nur maximal alle 30 sekunden, bzw, nach dem das Abspielen vorbei ist, auch wieder 30 sekunden warten
       if ((now > (lastRing + RING_TIMEOUT)) && (now > (lastPlaying + RING_TIMEOUT)))
       {
-        digitalWrite(LED_EXTERN, HIGH); // switch on
-        for (int i=0; i<3; i++)
+        for (int i=0; i<5; i++)
         {
           ringTheBell();
-          for (int k=0; k<20; k++)
+          for (int k=0; k<10; k++)
           {
             delay(100);
             if (digitalRead(PHONE_BTN) == 1)
@@ -160,7 +163,7 @@ void loop()
       {
         // only restart after 10 secs
         playTheMusic();
-        digitalWrite(LED_EXTERN, LOW);  // turn the LED off
+        //digitalWrite(LED_EXTERN, LOW);  // turn the LED off
       }
     }
     if ((digitalRead(BUTTON_MP3) == 0) && (oldBtnMP3 == 1))
@@ -198,8 +201,8 @@ void loop()
       // ring the bell
       ringTheBell();
     }
-    if (now > (lastRing + RING_TIMEOUT))
-      digitalWrite(LED_EXTERN, LOW);
+    //if (now > (lastRing + RING_TIMEOUT))
+    //  digitalWrite(LED_EXTERN, LOW);
   }
   else
   {
@@ -209,7 +212,7 @@ void loop()
     {
       // stop playing
       stopTheMusic();
-      digitalWrite(LED_EXTERN, HIGH);
+      //digitalWrite(LED_EXTERN, HIGH);
     }
   }
   oldPIR = digitalRead(INPUT_PIR);
@@ -264,7 +267,7 @@ void ringTheBell()
   int TIME2 = 5;
   // ring the bell
   digitalWrite(ENABLE_RING, HIGH);
-  for (int i=0; i<10; i++)
+  for (int i=0; i<4; i++)
   {
     digitalWrite(OUTPUT_RING2, HIGH);
     digitalWrite(OUTPUT_RING1, LOW);
