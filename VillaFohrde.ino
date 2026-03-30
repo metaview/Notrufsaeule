@@ -28,7 +28,6 @@ AltSoftSerial altSerial;
 #define PHONE_BTN     5
 #define LED_EXTERN    4
 #define RING_TIMEOUT  (30*1000)
-#define DELTA_TIMEOUT  (20*1000)
 
 #ifdef NEW_MP3LIB
   DFPlayerMini_Fast myMP3;
@@ -99,7 +98,7 @@ void setup()
 
   stopTheMusic();
 
-  lastRing = lastPlaying = millis() - DELTA_TIMEOUT;
+  lastRing = lastPlaying = millis();
   //ringTheBell();
  
   digitalWrite(LED_EXTERN, HIGH);
@@ -136,7 +135,7 @@ void loop()
     {
       // wenn eine Bewegung erkannt wird: klingeln
       // aber nur maximal alle 30 sekunden, bzw, nach dem das Abspielen vorbei ist, auch wieder 30 sekunden warten
-      if (((now - lastRing) > RING_TIMEOUT) && ((now - lastPlaying) > RING_TIMEOUT))
+      if ((now > (lastRing + RING_TIMEOUT)) && (now > (lastPlaying + RING_TIMEOUT)))
       {
         digitalWrite(LED_EXTERN, HIGH); // switch on
         for (int i=0; i<3; i++)
@@ -199,7 +198,7 @@ void loop()
       // ring the bell
       ringTheBell();
     }
-    if ((now - lastRing) > RING_TIMEOUT)
+    if (now > (lastRing + RING_TIMEOUT))
       digitalWrite(LED_EXTERN, LOW);
   }
   else
